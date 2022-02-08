@@ -155,7 +155,7 @@ class _SudokuState extends State<Sudoko> {
 
   Widget _sudokuGrid() {
     return Container(
-        decoration: BoxDecoration(color: Colors.teal),
+        decoration: BoxDecoration(color: Theme.of(context).primaryColor),
         child: GridView.count(
             shrinkWrap: true,
             crossAxisCount: 9,
@@ -176,8 +176,8 @@ class _SudokuState extends State<Sudoko> {
                           '${_solution[index].value}',
                           style: TextStyle(
                               color: _solution[index].modifyable
-                                  ? Colors.teal
-                                  : Colors.black),
+                                  ? Theme.of(context).primaryColor
+                                  : Theme.of(context).colorScheme.onSurface),
                         )
                       : _solution[index].helpDigits.isNotEmpty
                           ? GridView.count(
