@@ -6,9 +6,12 @@ Another unfinished project (this text will hopefully be updated)
 
 // TODO
 
-- småsiffror
+- auto fill help digits
+- separate data from display
+- remove debug banner
+- color scheme?
 - levels (?)
-- input mode
+- input mode (?)
 
 ## Getting Started
 

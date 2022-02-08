@@ -76,17 +76,21 @@ class _SudokuState extends State<Sudoko> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      _sudokuGrid(),
-      _inputModeButtons(),
-      _numberBar(),
+    return Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+      Column(
+        children: [
+          _sudokuGrid(),
+          _inputModeButtons(),
+          _numberBar(),
+        ],
+      ),
       _bottomButtons(),
     ]);
   }
 
   Widget _inputModeButtons() {
     return Container(
-        margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
+        margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
         child: ToggleButtons(
           children: [
             Icon(Icons.add_circle_outline),
@@ -156,6 +160,7 @@ class _SudokuState extends State<Sudoko> {
   Widget _sudokuGrid() {
     return Container(
         decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+        margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
         child: GridView.count(
             shrinkWrap: true,
             crossAxisCount: 9,
