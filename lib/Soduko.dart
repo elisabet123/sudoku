@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sudoku/SolutionFromFile.dart';
 
-
 class Sudoko extends StatefulWidget {
   @override
   _SudokuState createState() => _SudokuState();
@@ -26,7 +25,7 @@ class _SudokuState extends State<Sudoko> {
 
   void _tappedBox(int index) {
     if (_solution[index].modifyable) {
-      _solution[index].value = _selectedNumber;
+      _solution[index].value = _selectedNumber == 10 ? 0: _selectedNumber;
       setState(() {
         _solution = _solution;
       });
@@ -65,22 +64,25 @@ class _SudokuState extends State<Sudoko> {
         decoration: BoxDecoration(color: Colors.teal),
         child: GridView.count(
             shrinkWrap: true,
-            crossAxisCount: 9,
-            children: List.generate(9, (index) {
+            crossAxisCount: 10,
+            children: List.generate(10, (index) {
               var number = index + 1;
               var selected = number == _selectedNumber;
               return InkWell(
                 child: Container(
                   color: selected ? Colors.teal : Colors.white,
-                  margin: EdgeInsets.all(1),
+                  margin: EdgeInsets.fromLTRB(number == 1 ? 1 : 0.5, 1, number == 10 ? 1 : 0.5, 1),
                   child: Center(
-                    child: Text(
-                      '$number',
-                      style: TextStyle(
-                          fontWeight:
-                              selected ? FontWeight.bold : FontWeight.normal,
-                          color: selected ? Colors.white : Colors.teal),
-                    ),
+                    child: number == 10
+                        ? Icon(Icons.delete_outline)
+                        : Text(
+                            '$number',
+                            style: TextStyle(
+                                fontWeight: selected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: selected ? Colors.white : Colors.teal),
+                          ),
                   ),
                 ),
                 onTap: () {

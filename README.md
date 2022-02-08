@@ -5,7 +5,7 @@ Sudoku
 Another unfinished project (this text will hopefully be updated)
 
 // TODO
-- git
+
 - småsiffror
 - sudda
 - levels (?)
