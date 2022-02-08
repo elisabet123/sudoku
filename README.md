@@ -7,8 +7,8 @@ Another unfinished project (this text will hopefully be updated)
 // TODO
 
 - småsiffror
-- sudda
 - levels (?)
+- input mode
 
 ## Getting Started
 
