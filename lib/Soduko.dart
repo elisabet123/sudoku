@@ -3,74 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:sudoku/SolutionFromFile.dart';
 
+import 'SudokuModel.dart';
+import 'SudokuSquareData.dart';
+
 class Sudoko extends StatefulWidget {
   @override
   _SudokuState createState() => _SudokuState();
 }
 
 class _SudokuState extends State<Sudoko> {
-  List<_SudokuSquareData> _solution =
-      new List.filled(81, _SudokuSquareData(false, 0));
-  SolutionFromFile _solutionFromFile = SolutionFromFile();
-  int _selectedNumber = 1;
-  var _inputModeSelection = [true, false, false];
+  late SudokuModel _model;
 
   _SudokuState() {
-    _solutionFromFile.readSolutions().then((str) {
-      _solution = _solutionFromFile
-          .nextSolution()
-          .map((value) => _SudokuSquareData(value == 0, value))
-          .toList();
-      setState(() {
-        _solution = _solution;
-      });
-    });
+    _model = SudokuModel(_setState);
   }
 
-  void _tappedBox(int index) {
-    if (_solution[index].modifyable) {
-      if (_inputModeSelection[0]) {
-        _solution[index].value = _selectedNumber;
-        _solution[index].helpDigits.clear();
-      } else if (_inputModeSelection[1]) {
-        _solution[index].value = 0;
-        _solution[index].helpDigits.clear();
-      } else {
-        _solution[index].helpDigits.contains(_selectedNumber)
-            ? _solution[index].helpDigits.remove(_selectedNumber)
-            : _solution[index].helpDigits.add(_selectedNumber);
-      }
-      setState(() {
-        _solution = _solution;
-      });
-    }
-  }
-
-  void _selectNumber(int number) {
-    _selectedNumber = number;
+  _setState(SudokuModel model) {
     setState(() {
-      _selectedNumber = _selectedNumber;
-    });
-  }
-
-  void _reloadSudoku() {
-    _solution.forEach((square) {
-      if (square.modifyable) {
-        square.value = 0;
-      }
-    });
-    setState(() {
-      _solution = _solution;
-    });
-  }
-
-  void _newSudoku() {
-    _solution = _solutionFromFile
-        .nextSolution()
-        .map((value) => _SudokuSquareData(value == 0, value))
-        .toList();
-    setState(() {
-      _solution = _solution;
+      _model = model;
     });
   }
 
@@ -97,14 +47,8 @@ class _SudokuState extends State<Sudoko> {
             Icon(Icons.delete_outline),
             Icon(Icons.create)
           ],
-          isSelected: _inputModeSelection,
-          onPressed: (int index) {
-            _inputModeSelection.fillRange(0, 3, false);
-            _inputModeSelection[index] = true;
-            setState(() {
-              _inputModeSelection = _inputModeSelection;
-            });
-          },
+          isSelected: _model.inputModeSelection,
+          onPressed: _model.setInputMode,
           borderRadius: BorderRadius.circular(1),
           fillColor: Theme.of(context).primaryColorLight,
         ));
@@ -113,8 +57,8 @@ class _SudokuState extends State<Sudoko> {
   Widget _bottomButtons() {
     return Row(
       children: [
-        ElevatedButton(onPressed: _reloadSudoku, child: Text('Reset')),
-        ElevatedButton(onPressed: _newSudoku, child: Text('New')),
+        ElevatedButton(onPressed: _model.reloadSudoku, child: Text('Reset')),
+        ElevatedButton(onPressed: _model.newSudoku, child: Text('New')),
       ],
       mainAxisAlignment: MainAxisAlignment.spaceAround,
     );
@@ -128,7 +72,7 @@ class _SudokuState extends State<Sudoko> {
             crossAxisCount: 9,
             children: List.generate(9, (index) {
               var number = index + 1;
-              var selected = number == _selectedNumber;
+              var selected = number == _model.selectedNumber;
               return InkWell(
                 child: Container(
                   decoration: BoxDecoration(
@@ -151,7 +95,7 @@ class _SudokuState extends State<Sudoko> {
                   ),
                 ),
                 onTap: () {
-                  _selectNumber(number);
+                  _model.selectNumber(number);
                 },
               );
             })));
@@ -176,15 +120,15 @@ class _SudokuState extends State<Sudoko> {
                       row % 3 == 0 ? 2 : 1,
                       col % 3 == 2 ? 2 : 1,
                       row % 3 == 2 ? 2 : 1),
-                  child: _solution[index].value > 0
+                  child: _model.solution[index].value > 0
                       ? Text(
-                          '${_solution[index].value}',
+                          '${_model.solution[index].value}',
                           style: TextStyle(
-                              color: _solution[index].modifyable
+                              color: _model.solution[index].modifyable
                                   ? Theme.of(context).primaryColor
                                   : Theme.of(context).colorScheme.onSurface),
                         )
-                      : _solution[index].helpDigits.isNotEmpty
+                      : _model.solution[index].helpDigits.isNotEmpty
                           ? GridView.count(
                               crossAxisCount: 3,
                               shrinkWrap: true,
@@ -194,7 +138,7 @@ class _SudokuState extends State<Sudoko> {
                                   var number = i + 1;
                                   return Center(
                                       child: Text(
-                                    _solution[index].helpDigits.contains(number)
+                                    _model.solution[index].helpDigits.contains(number)
                                         ? '$number'
                                         : '',
                                     style: TextStyle(
@@ -208,17 +152,10 @@ class _SudokuState extends State<Sudoko> {
                           : Text(''),
                 ),
                 onTap: () {
-                  _tappedBox(index);
+                  _model.tappedBox(index);
                 },
               );
             })));
   }
 }
 
-class _SudokuSquareData {
-  final bool modifyable;
-  int value;
-  Set<int> helpDigits = new Set();
-
-  _SudokuSquareData(this.modifyable, this.value);
-}
