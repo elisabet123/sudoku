@@ -14,7 +14,7 @@ def is_ok_to_use(solution, index, number):
 def number_used_in_row(solution, index, number):
     row = index // 9
     first_index = row * 9
-    last_index = ((row + 1) * 9) - 1
+    last_index = ((row + 1) * 9)
     return number in solution[first_index:last_index]
 
 def number_used_in_col(solution, index, number):
@@ -79,30 +79,45 @@ def exactly_one_solution(solution):
     index = solution.index(0)
     possible_numbers = create_number_sequence()
     found_solution = False
+    solution_copy = [i for i in solution]
     for number in possible_numbers:
         if is_ok_to_use(solution, index, number):
-            solution[index] = number
-            if exactly_one_solution(solution):
+            solution_copy[index] = number
+            if exactly_one_solution(solution_copy):
                 if found_solution:
                     return False
                 else:
                     found_solution = True
     return found_solution
 
+def try_remove(solution, index):
+    backup = solution[index]
+    solution[index] = 0
+
+    solution_copy = [i for i in solution]
+    if exactly_one_solution(solution_copy):
+        return True
+    else:
+        solution[index] = backup;
+        return False
+
+
 def remove_numbers(solution, to_remove):
-    print(f"removing {to_remove} numbers")
+    print(f"Removing {to_remove} numbers...")
     while to_remove > 0:
         index_remaining = [x for x in range(81) if solution[x] is not 0]
         random.shuffle(index_remaining)
-        index = index_remaining.pop()
-        backup = solution[index]
-        solution[index] = 0
-
-        solution_copy = [i for i in solution]
-        if not exactly_one_solution(solution_copy):
-            solution[index] = backup;
-        else:
-            to_remove -= 1
+        suceeded = False
+        tries = 0
+        for index in index_remaining:
+            if try_remove(solution, index):
+                to_remove -=1
+                tries += 1
+                suceeded = True
+                break
+        print(f"{to_remove} {tries}")
+        if not suceeded:
+            raise Exception('Could not find a numbers to remove!')
     return solution
 
 def main():
@@ -110,9 +125,10 @@ def main():
     index_to_box = create_boxes()
     global box_to_index
     box_to_index = indices_in_boxes(index_to_box)
-    for x in range(100):
+    for x in range(1):
         solution = create()
-        solution = remove_numbers(solution, 64)
+        solution = remove_numbers(solution, 60)
+        print(solution)
 
         f = open("sudoku.txt", "a")
         f.write(str(solution) + "\n")
@@ -120,26 +136,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-#
-#   List<List<int>> getGrid():
-#     var chunks = new List<List<int>>.empty();
-#     int chunkSize = 2;
-#     for (var i = 0; i < solution.length; i += chunkSize):
-#       chunks.add(solution.sublist(i,
-#           i + chunkSize > solution.length ? solution.length : i + chunkSize));
-#     
-#     return chunks;
-#   
-#
-#   List<int> _createNumberSequence():
-#     var list = new List<int>.generate(9, (i) => i + 1);
-#     list.shuffle();
-#     return list;
-#   
-#
-#
-#   bool _solved(List<int> solution):
-#     return solution.none((value) => value == 0);
-#   
-# 
